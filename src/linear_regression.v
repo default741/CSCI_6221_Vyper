@@ -18,7 +18,7 @@ pub fn predict(x []f64, weight f64, bias f64) []f64 {
     mut y_pred := []f64{}
 
     for idx in 0..x.len {
-        pred := x[idx] * weight + bias
+        mut pred := (x[idx] * weight) + bias
 
         y_pred << utils.round(pred)
     }
@@ -41,15 +41,15 @@ pub fn r_square(predicted_data []f64, actual_data []f64) f64 {
 
 	assert actual_data.len == predicted_data.len
 
-	mut y_pred_residual := []f64{}
-	mut y_residual := []f64{}
+	mut rss := []f64{}
+	mut tss := []f64{}
 
 	mean_y := utils.fmean(actual_data)
 
 	for idx in 0..actual_data.len {
-		y_pred_residual << (predicted_data[idx] - mean_y) * (predicted_data[idx] - mean_y)
-		y_residual << (actual_data[idx] - mean_y) * (actual_data[idx] - mean_y)
+		rss << (actual_data[idx] - predicted_data[idx]) * (actual_data[idx] - predicted_data[idx])
+		tss << (actual_data[idx] - mean_y) * (actual_data[idx] - mean_y)
 	}
 
-	return utils.fsum(y_pred_residual) / utils.fsum(y_residual)
+	return 1 - (utils.fsum(rss) / utils.fsum(tss))
 }

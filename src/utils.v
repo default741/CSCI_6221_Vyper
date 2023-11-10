@@ -51,7 +51,7 @@ pub fn fvariance(input_array []f64) (f64) {
 		residual_array << (input_array[idx] - mean) * (input_array[idx] - mean)
 	}
 
-	return fsum(residual_array)
+	return fsum(residual_array) / input_array.len
 }
 
 pub fn fcovariance(input_array_x []f64, input_array_y []f64) (f64) {
@@ -77,7 +77,7 @@ pub fn fcovariance(input_array_x []f64, input_array_y []f64) (f64) {
 		covariance = covariance + ((input_array_x[idx] - mean_x) * (input_array_y[idx] - mean_y))
 	}
 
-	return covariance
+	return covariance / input_array_x.len
 }
 
 pub fn round(input_data f64) f64 {
