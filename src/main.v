@@ -3,6 +3,7 @@ module main
 import utils
 import time
 import linear_regression as lr
+import py_plot
 
 import read_xlsx_v
 
@@ -100,4 +101,13 @@ fn main() {
 
     println(results)
     println(params)
+
+    mut plot_data := py_plot.PlotGraph {
+        slope: params.weight
+        intercept: params.bias
+        feature_data: x
+        target_data: y
+    }
+
+    py_plot.plot_graph(mut plot_data)
 }
