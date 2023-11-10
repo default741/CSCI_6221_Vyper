@@ -30,6 +30,7 @@ fn calculate_gradients(x []f64, y []f64, y_pred []f64) (f64, f64) {
 
     mut error := []f64{}
     mut loss := []f64{}
+
     mut dw := 0.0
     mut db := 0.0
 
