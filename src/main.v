@@ -1,6 +1,7 @@
 module main
 
 import time
+import tabular
 import linear_regression as lr
 import py_plot
 
@@ -43,10 +44,17 @@ fn main() {
         }
     }
 
-    mut model := lr.LinearRegression.init_model(0.0000000001, 500, zero_weight_bias, x.len)
-    model = model.fit_model(x, y)
+    mut df := tabular.DataFrame.data_frame(x)
+    mut vec := tabular.Series.series(y)
 
-    println(params)
+    println(df)
+    println(vec)
+    println(vec.fsum())
+
+    // mut model := lr.LinearRegression.init_model(0.0000000001, 500, zero_weight_bias, x.len)
+    // model = model.fit_model(x, y)
+
+    // println(model)
 
     // mut results := OLSRegressionDescription {
     //     dependent_variable: column_names[column_names.len - 1]
