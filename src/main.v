@@ -1,6 +1,5 @@
 module main
 
-import utils
 import time
 import linear_regression as lr
 import py_plot
@@ -44,8 +43,8 @@ fn main() {
         }
     }
 
-    mut params := lr.LinearRegression.init_model(0.0000000001, 500, zero_weight_bias, x.len)
-    params = params.fit_model(x, y)
+    mut model := lr.LinearRegression.init_model(0.0000000001, 500, zero_weight_bias, x.len)
+    model = model.fit_model(x, y)
 
     println(params)
 
