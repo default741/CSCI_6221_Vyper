@@ -1,109 +1,68 @@
 module tabular
 
-pub struct DataFrame {
-	mut:
-		data [][]f64
-		shape []int
-		column_names []string
-}
-
 pub struct Series {
-	mut:
+	pub mut:
 		data []f64
 		shape []int
 		series_name string
 }
 
+pub struct DataFrame {
+	pub mut:
+		data []Series
+		shape []int
+		column_names []string
+}
+
 pub fn DataFrame.data_frame (data [][]f64, column_names []string) DataFrame {
+	mut series_data := []Series{}
+
+	for idx in 0..data.len {
+		series_data << Series.series(data[idx], column_names[idx])
+	}
+
 	return DataFrame{
-		data: data
+		data: series_data
 		shape: [data[0].len, data.len]
 		column_names: column_names
 	}
 }
 
 pub fn (mut df DataFrame) get (column_name string) Series {
-	mut feature_index := 0
+	mut result := Series.series([], 'empty_series')
 
-	for idx in 0.. df.shape[1]{
-		if column_name == df.column_names[idx] {
-			feature_index = idx
-			break
+	for record in df.data{
+		if column_name == record.series_name {
+			result = record
 		}
 	}
 
-	mut feature_vector := Series.series(df.data[feature_index], column_name)
-
-	return feature_vector
+	return result
 }
 
 pub fn (mut df DataFrame) fsum (column_name string) f64 {
-	mut feature_index := 0
+	mut record := df.get(column_name)
 
-	for idx in 0.. df.shape[1]{
-		if column_name == df.column_names[idx] {
-			feature_index = idx
-			break
-		}
-	}
-
-	mut feature_vector := Series.series(df.data[feature_index], column_name)
-
-	return feature_vector.fsum()
+	return record.fsum()
 }
 
 pub fn (mut df DataFrame) fmean (column_name string) f64 {
-	mut feature_index := 0
+	mut record := df.get(column_name)
 
-	for idx in 0.. df.shape[1]{
-		if column_name == df.column_names[idx] {
-			feature_index = idx
-			break
-		}
-	}
-
-	mut feature_vector := Series.series(df.data[feature_index], column_name)
-
-	return feature_vector.fmean()
+	return record.fmean()
 }
 
 pub fn (mut df DataFrame) fvariance (column_name string) f64 {
-	mut feature_index := 0
+	mut record := df.get(column_name)
 
-	for idx in 0.. df.shape[1]{
-		if column_name == df.column_names[idx] {
-			feature_index = idx
-			break
-		}
-	}
-
-	mut feature_vector := Series.series(df.data[feature_index], column_name)
-
-	return feature_vector.fvariance()
+	return record.fvariance()
 }
 
 pub fn (mut df DataFrame) fcovariance (column_name_a string, column_name_b string) f64 {
-	mut feature_index_a := 0
-	mut feature_index_b := 0
+	mut record_a := df.get(column_name_a)
+	mut record_b := df.get(column_name_b)
 
-	for idx in 0.. df.shape[1]{
-		if column_name_a == df.column_names[idx] {
-			feature_index_a = idx
-			break
-		}
-	}
-
-	for idx in 0.. df.shape[1]{
-		if column_name_b == df.column_names[idx] {
-			feature_index_b = idx
-			break
-		}
-	}
-
-	mut feature_vector_a := Series.series(df.data[feature_index_a], column_name_a)
-	mut feature_vector_b := Series.series(df.data[feature_index_b], column_name_b)
-
-	return feature_vector_a.fcovariance(mut feature_vector_b)
+	return record_a.fcovariance(mut record_b)
 }
 
 /* ############################################ Series Functions ######################################################## */
