@@ -20,7 +20,7 @@ struct OLSRegressionDescription {
 
 struct LinearRegressionParams {
     mut:
-        weight f64
+        weights []f64
         bias f64
         learning_rate f64
         iterations int
@@ -51,63 +51,97 @@ fn calculate_gradients(x []f64, y []f64, y_pred []f64) (f64, f64) {
 
 
 fn main() {
-    excel_data := read_xlsx_v.parse('./data/test_data.xlsx')!
+    excel_data := read_xlsx_v.parse('./data/test_data_mv.xlsx')!
     mut input_data := excel_data.clone()
+
+    zero_weight_bias := false
 
     column_names := excel_data.first()
     input_data.delete(0)
 
     println("Features Used: ${column_names}")
 
-    mut x := []f64{}
+    mut x := [][]f64{len: input_data[0].len - 1, init: []f64{len: input_data.len}}
+    mut feature := []f64{}
+
     mut y := []f64{}
 
     for mut record in input_data {
         int_record := record.map(it.f64())
-
-        x << int_record[0]
-        y << int_record[1]
+        y << int_record[input_data[0].len - 1]
     }
 
+    for idx_i in 0..input_data.len {
+        for idx_j in 0..input_data[0].len - 1 {
+            x[idx_j][idx_i] = input_data[idx_i][idx_j].f64()
+        }
+    }
 
-    init_weight := utils.round(utils.fcovariance(x, y) / utils.fvariance(x))
-    init_bias := utils.round(utils.fmean(y) - init_weight * utils.fmean(x))
+    println(x)
+
+    mut init_weights := []f64{}
+    mut init_bias := 0.0
+
+    if zero_weight_bias {
+        for idx in 0..x.len {
+            init_weights << 0.0
+        }
+
+        init_bias = 0.0
+    }
+    else {
+        for idx in 0..x.len {
+            init_weights << utils.round(utils.fcovariance(x[idx], y) / utils.fvariance(x[idx]))
+        }
+
+        mut slope_x_sum := 0.0
+
+        for idx in 0..x.len {
+            slope_x_sum = slope_x_sum + (init_weights[idx] * utils.fmean(x[idx]))
+        }
+
+        init_bias = utils.round(utils.fmean(y) - slope_x_sum)
+    }
+
+    println(init_weights)
+    println(init_bias)
+
 
     mut params := LinearRegressionParams {
-        weight: init_weight
+        weights: init_weights
         bias: init_bias
-        learning_rate: 0.00000001
+        learning_rate: 0.01
         iterations: 1000
     }
 
     mut y_pred := []f64{}
 
     for idx in 0..params.iterations {
-        y_pred = lr.predict(x, params.weight, params.bias)
+        y_pred = lr.predict(x, params.weights, params.bias)
         dw, db := calculate_gradients(x, y, y_pred)
 
         params.weight = utils.round(params.weight - (params.learning_rate * dw))
         params.bias = utils.round(params.bias - (params.learning_rate * db))
     }
 
-    mut results := OLSRegressionDescription {
-        dependent_variable: column_names[column_names.len - 1]
-        model_name: "Simple Linear Regression"
-        method: "Mean Square Error"
-        datetime: time.now()
-        no_of_observations: x.len
-        r_squared: utils.round(lr.r_square(y_pred, y))
-    }
+    // mut results := OLSRegressionDescription {
+    //     dependent_variable: column_names[column_names.len - 1]
+    //     model_name: "Simple Linear Regression"
+    //     method: "Mean Square Error"
+    //     datetime: time.now()
+    //     no_of_observations: x.len
+    //     r_squared: utils.round(lr.r_square(y_pred, y))
+    // }
 
-    println(results)
-    println(params)
+    // println(results)
+    // println(params)
 
-    mut plot_data := py_plot.PlotGraph {
-        slope: params.weight
-        intercept: params.bias
-        feature_data: x
-        target_data: y
-    }
+    // mut plot_data := py_plot.PlotGraph {
+    //     slope: params.weight
+    //     intercept: params.bias
+    //     feature_data: x
+    //     target_data: y
+    // }
 
-    py_plot.plot_graph(mut plot_data)
+    // py_plot.plot_graph(mut plot_data)
 }

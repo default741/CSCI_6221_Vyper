@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
+import plotly.offline as po
 
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser()
@@ -86,9 +86,10 @@ fig.add_trace(go.Scatter(
 fig.update_layout(xaxis_title='Target', yaxis_title='Feature')
 
 # Show the plot
-fig.show()
+ofimg = po.plot(fig)
+
 print("plotting successfull")
-fig.write_image('./plot_image.jpeg')
+fig.write_image('./images/plot_image.jpeg', format='jpeg', engine='kaleido')
 
 # Save the plot as an image
 # if args.save_image:

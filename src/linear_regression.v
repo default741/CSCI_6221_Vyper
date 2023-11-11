@@ -2,13 +2,13 @@ module linear_regression
 
 import utils
 
-pub fn predict(x []f64, weight f64, bias f64) []f64 {
+pub fn predict(x [][]f64, weights []f64, bias f64) []f64 {
 	/*
 	Predicts the target value based on the input variables, weights and bias.
 
 	Args:
-		x ([]f64): Input Array
-		weight (f64): Slope of the Line.
+		x ([][]f64): Input Array.
+		weights ([]f64): Slope of the Line for each feature.
 		bias (f64): Intercept of the Line.
 
 	Returns:
@@ -17,11 +17,15 @@ pub fn predict(x []f64, weight f64, bias f64) []f64 {
 
     mut y_pred := []f64{}
 
-    for idx in 0..x.len {
-        mut pred := (x[idx] * weight) + bias
+	for idx_i in 0..x[0].len {
+		mut slope_x_sum := 0.0
 
-        y_pred << utils.round(pred)
-    }
+		for idx_j in 0..x.len {
+			slope_x_sum = slope_x_sum + (x[idx_j][idx_i] * weights[idx_j])
+		}
+
+		y_pred << utils.round(slope_x_sum + bias)
+	}
 
     return y_pred
 }
