@@ -54,7 +54,7 @@ pub fn print_table(max_list []int) {
     // Loop through each column's maximum length in max_list
     for i in 0..max_list.len {
         // Print '-' characters to create the horizontal border
-        for j in 0..max_list[i] + 2 {
+        for _ in 0..max_list[i] + 2 {
             print('-')
         }
 
@@ -81,7 +81,7 @@ pub fn print_headers(data [][]string, max_list []int) {
     // Loop through each column in the first row of the table
     for idx in 0..data[0].len {
         // Align the header content based on the maximum length of the column
-        for j in 0..max_list[idx] - data[0][idx].str().len {
+        for _ in 0..max_list[idx] - data[0][idx].str().len {
             print(' ')
         }
 
@@ -135,7 +135,7 @@ pub fn display(data [][]string, rows_start int, rows_end int) {
             // Loop through each column in the current row
             for idx in 0..data[rows].len {
                 // Align the content based on the maximum length of the column
-                for j in 0..max_list[idx] - data[rows][idx].str().len {
+                for _ in 0..max_list[idx] - data[rows][idx].str().len {
                     print(' ')
                 }
 
@@ -157,4 +157,5 @@ pub fn display(data [][]string, rows_start int, rows_end int) {
 
     // Print the bottom border of the table
     print_table(max_list)
+    println('')
 }

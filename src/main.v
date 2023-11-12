@@ -1,6 +1,7 @@
 module main
 
 import tabular
+import visualize_table
 import linear_regression as lr
 import py_plot
 
@@ -20,6 +21,9 @@ pub fn read_ml_data(file_path string) !(tabular.DataFrame, tabular.Series) {
 
     excel_data := read_xlsx_v.parse(file_path)! // Parse the Excel data using the read_xlsx_v module
     mut input_data := excel_data.clone() // Create a mutable copy of the parsed Excel data
+
+    // Visualize data in a tabular format
+    visualize_table.display(excel_data, 0, 10)
 
     // Extract column names and remove them from the input data
     column_names := excel_data.first()
@@ -58,7 +62,7 @@ fn main() {
 
     // Configuration for linear regression model
     zero_weight_bias := false
-    learning_rate := 0.00001
+    learning_rate := 0.00000001
     epochs := 500
 
     // Read machine learning data from the Excel file

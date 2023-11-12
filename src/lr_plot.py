@@ -1,96 +1,141 @@
-import argparse
 import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
-import plotly.offline as po
 
-# Create an ArgumentParser object
-parser = argparse.ArgumentParser()
-
-# Add an argument for the feature data and target data
-parser.add_argument('--data', type=str, nargs='*', required=True)
-
-# Add an argument for the slope
-parser.add_argument('--slope', type=float, required=True)
-
-# Add an argument for the intercept
-parser.add_argument('--intercept', type=float, required=True)
-
-# Add an argument to save the plot as an image
-parser.add_argument('--save_image', action='store_true')
-
-# Parse the command-line arguments
-args = parser.parse_args()
-
-# Get the feature data and target data
-data = args.data
-
-# Split the data list into feature data and target data lists
-feature_data = data[:len(data) // 2]
-target_data = data[len(data) // 2:]
-
-# Convert the feature data to numerics
-feature_data = list(map(float, feature_data))
-target_data = list(map(float, target_data))
-print(feature_data)
-
-# Get the slope and intercept
-slope = args.slope
-intercept = args.intercept
-
-# df = pd.DataFrame({'X': feature_data, 'Y': target_data})
-
-# fig = px.scatter(df, x='X', y='Y')
+from argparse import Namespace, ArgumentParser
+from pydantic import BaseModel
 
 
-x = np.array([min(feature_data), max(feature_data)])
-y = list(map(lambda x: slope * x + intercept, x))
+class ML_Data(BaseModel):
+    """A Pydantic model representing machine learning data with regression parameters.
 
-# fig.add_trace(px.scatter(x=x, y=f(x)))
+    Attributes:
+        feature_data (list): List of feature data points.
+        target_data (list): List of corresponding target data points.
 
-# Create a Figure object
-fig = go.Figure()
+        slope (float): Slope value for the linear regression equation.
+        intercept (float): Intercept value for the linear regression equation.
 
-# Add the scatter plot trace
-fig.add_trace(go.Scatter(
-    x=feature_data,
-    y=target_data,
-    mode='markers',
-    name='Scatter Plot'
-))
+        x_regress (list): List of x-values for the regression line.
+        y_regress (list): List of y-values for the regression line.
+    """
+
+    feature_data: list
+    target_data: list
+
+    slope: float
+    intercept: float
+
+    x_regress: list
+    y_regress: list
 
 
-predicted_values_list = []
-# Calculate the predicted values
-for i in feature_data:
-    predicted_values = (slope * i) + intercept
-    predicted_values_list.append(predicted_values)
-print(predicted_values_list)
+def get_arguments() -> Namespace:
+    """Parses command line arguments using argparse.
 
-fig.add_trace(go.Scatter(
-    x=feature_data,
-    y=predicted_values_list,
-    mode='markers',
-    name='Scatter Plot'
-))
+    Returns:
+        argparse.Namespace: An object containing the parsed command line arguments.
+    """
 
-# Add the regression line trace
-fig.add_trace(go.Scatter(
-    x=x,
-    y=y,
-    mode='lines',
-    name='Regression Line'
-))
+    # Create an ArgumentParser object
+    parser = ArgumentParser()
 
-# Set the labels for the x and y axes
-fig.update_layout(xaxis_title='Target', yaxis_title='Feature')
+    # Define command line arguments
+    parser.add_argument('--data', type=str, nargs='*', required=True,
+                        help='List of data points for analysis.')
+    parser.add_argument('--slope', type=float, required=True,
+                        help='Slope value for the linear equation.')
+    parser.add_argument('--intercept', type=float, required=True,
+                        help='Intercept value for the linear equation.')
 
-# Show the plot
-ofimg = po.plot(fig)
+    # Parse the command line arguments and return the result
+    return parser.parse_args()
 
-print("plotting successfull")
-fig.write_image('./images/plot_image.jpeg', format='jpeg', engine='kaleido')
 
-# Save the plot as an image
-# if args.save_image:
-#     fig.write_image('plot.png')
+def process_data(args: Namespace) -> ML_Data:
+    """
+    Process command line arguments and generate ML_Data object.
+
+    Args:
+        args (Namespace): Parsed command line arguments.
+
+    Returns:
+        ML_Data: An ML_Data object containing processed data and regression parameters.
+    """
+    # Create an instance of the ML_Data class
+    data_dict = ML_Data
+
+    # Extract data from command line arguments
+    data = args.data
+
+    # Split the data into feature and target data
+    data_dict.feature_data = list(map(float, data[:len(data) // 2]))
+    data_dict.target_data = list(map(float, data[len(data) // 2:]))
+
+    # Assign slope and intercept values
+    data_dict.slope = args.slope
+    data_dict.intercept = args.intercept
+
+    # Generate x and y values for the regression line
+    data_dict.x_regress = np.array(
+        [min(data_dict.feature_data), max(data_dict.feature_data)])
+    data_dict.y_regress = list(
+        map(lambda x: data_dict.slope * x + data_dict.intercept, data_dict.x_regress))
+
+    return data_dict
+
+
+def plot_graph(data_dict: ML_Data) -> None:
+    """Plot a graph using Plotly to visualize actual data, predicted data, and the regression line.
+
+    Args:
+        data_dict (ML_Data): An ML_Data object containing data and regression parameters.
+    """
+
+    # Create a Plotly Figure
+    fig = go.Figure()
+
+    # Add actual data as scatter plot
+    fig.add_trace(go.Scatter(
+        x=data_dict.feature_data, y=data_dict.target_data,
+        mode='markers', name='Actual Data'
+    ))
+
+    # Calculate predicted values based on the regression parameters
+    predicted_values_list = [
+        (data_dict.slope * xi) + data_dict.intercept for xi in data_dict.feature_data]
+
+    # Add predicted data as another scatter plot
+    fig.add_trace(go.Scatter(
+        x=data_dict.feature_data, y=predicted_values_list,
+        mode='markers', name='Predicted Data'
+    ))
+
+    # Add the regression line as a line plot
+    fig.add_trace(go.Scatter(
+        x=data_dict.x_regress, y=data_dict.y_regress,
+        mode='lines', name='Regression Line'
+    ))
+
+    # Update layout with axis titles
+    fig.update_layout(xaxis_title='Feature_data', yaxis_title='Target Data')
+
+    # Show the plot
+    fig.show()
+
+    # Save the plot as an image
+    fig.write_image('./images/plot_image.jpeg',
+                    format='jpeg', engine='kaleido')
+
+    # Print a success message
+    print("Plotting Successful!")
+
+
+if __name__ == '__main__':
+    # Parse command line arguments
+    args = get_arguments()
+
+    # Process the parsed arguments and generate an ML_Data object
+    data_dict = process_data(args=args)
+
+    # Plot a graph using the processed data
+    plot_graph(data_dict=data_dict)

@@ -46,7 +46,7 @@ pub fn plot_graph(mut plot_params PlotGraph) {
 		plot_graph(plot_params)
 	*/
 
-    mut python_script_path := "./lr_plot.py" // Define the path to the Python script
+    mut python_script_path := "lr_plot.py" // Define the path to the Python script
 
     // Retrieve parameters as strings
     mut slope, mut intercept, mut feature_data, mut target_data := plot_params.get_params()
@@ -59,10 +59,8 @@ pub fn plot_graph(mut plot_params PlotGraph) {
     mut data := feature_data + " " + target_data
 
     // Build the command-line string
-    mut cli_string := python_script_path + " --data " + data + " --slope " + slope + " --intercept " + intercept
+    mut cli_string := "python " + python_script_path + " --slope " + slope + " --intercept " + intercept + " --data " + data
 
-    // Execute the Python script using os.execvp
-    os.execvp("python", [cli_string]) or {
-        println("Error executing Python script")
-    }
+	// Execute the CLI Command to run the python Script
+	os.execute(cli_string)
 }
