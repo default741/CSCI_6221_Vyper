@@ -9,15 +9,15 @@ pub struct LinearRegression {
 	LinearRegression is a struct representing a linear regression model.
 
 	Attributes:
-		- mut weights: A 1D array representing the weights of the model.
-		- mut bias: A scalar representing the bias of the model.
-		- mut learning_rate: A scalar representing the learning rate for gradient descent.
-		- mut iterations: An integer representing the number of iterations for gradient descent.
-		- mut zero_weight_bias: A boolean indicating whether to initialize weights and bias to zero.
-		- mut num_features: An integer representing the number of features in the dataset.
-		- mut r_square: A scalar representing the coefficient of determination (R²) for the model.
+		- pub mut weights: A 1D array representing the weights of the model.
+		- pub mut bias: A scalar representing the bias of the model.
+		- pub mut learning_rate: A scalar representing the learning rate for gradient descent.
+		- pub mut iterations: An integer representing the number of iterations for gradient descent.
+		- pub mut zero_weight_bias: A boolean indicating whether to initialize weights and bias to zero.
+		- pub mut num_features: An integer representing the number of features in the dataset.
+		- pub mut r_square: A scalar representing the coefficient of determination (R²) for the model.
 	*/
-    mut:
+    pub mut:
         weights tabular.Series
         bias f64
         learning_rate f64
@@ -248,7 +248,4 @@ pub fn (mut lr_model LinearRegression) score(predicted_data []f64, actual_data [
 
     // Calculate R² and round the result
     lr_model.r_square = utils.round(1 - (utils.list_sum(rss) / utils.list_sum(tss)))
-}
-
-pub fn (mut lr_model LinearRegression) summary() {
 }
