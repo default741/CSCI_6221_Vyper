@@ -1,95 +1,87 @@
 module utils
 
-pub fn fsum(input_array []f64) (f64) {
+pub fn list_sum(input_array []f64) f64 {
 	/*
-	Calculates the Sum of Array Values with floating point values.
+	list_sum calculates the sum of elements in a floating-point array.
 
-	Args:
-		input_array ([]f64): Input Array
+	Parameters:
+		- input_array: The array for which the sum is calculated.
 
 	Returns:
-		f64: Sum of all the values in the Imput Array.
+		- The sum of elements in the input array as a floating-point number.
 	*/
 
-	mut final_sum := 0.0
+    mut final_sum := 0.0 // Initialize the sum variable
 
-	for idx in 0..input_array.len {
+    // Iterate through each element in the array and accumulate the sum
+    for idx in 0..input_array.len {
         final_sum = final_sum + input_array[idx]
-	}
+    }
 
-	return final_sum
+    return final_sum // Return the calculated sum
 }
 
-pub fn fmean(input_array []f64) (f64) {
+pub fn list_mean(input_array []f64) f64 {
 	/*
-	Calculates the Mean of Array Values with floating point values.
+	list_mean calculates the mean (average) of elements in a floating-point array.
 
-	Args:
-		input_array ([]f64): Input Array
+	Parameters:
+		- input_array: The array for which the mean is calculated.
 
 	Returns:
-		f64: Mean of the values in the Imput Array.
-	*/
-	return fsum(input_array) / input_array.len
-}
-
-pub fn fvariance(input_array []f64) (f64) {
-	/*
-	Calculates the Variance of Array Values with floating point values.
-
-	Args:
-		input_array ([]f64): Input Array
-
-	Returns:
-		f64: Variance of the values in the Imput Array.
+		- The mean of elements in the input array as a floating-point number.
 	*/
 
-	mut residual_array := []f64{}
-	mean := fmean(input_array)
+    sum := list_sum(input_array) // Calculate the sum of elements using the list_sum function
 
-	for idx in 0..input_array.len {
-		residual_array << (input_array[idx] - mean) * (input_array[idx] - mean)
-	}
-
-	return fsum(residual_array) / input_array.len
-}
-
-pub fn fcovariance(input_array_x []f64, input_array_y []f64) (f64) {
-	/*
-	Calculates the Variance of Array Values with floating point values.
-
-	Args:
-		input_array_x ([]f64): Input Array X
-		input_array_y ([]f64): Input Array Y
-
-	Returns:
-		f64: Variance of the values in the Imput Array.
-	*/
-
-	assert input_array_x.len == input_array_y.len
-
-	mut covariance := 0.0
-
-	mean_x := fmean(input_array_x)
-	mean_y := fmean(input_array_y)
-
-	for idx in 0..input_array_x.len {
-		covariance = covariance + ((input_array_x[idx] - mean_x) * (input_array_y[idx] - mean_y))
-	}
-
-	return covariance / input_array_x.len
+    return sum / input_array.len // Calculate the mean by dividing the sum by the number of elements
 }
 
 pub fn round(input_data f64) f64 {
 	/*
-	Rounds the floating point value to the specified decimal points.
+	round rounds a floating-point number to three decimal places.
 
-	Args:
-		input_data (f64): Input Array
-		decimal_points (int): Number of decimal points.
+	Parameters:
+		- input_data: The floating-point number to be rounded.
 
 	Returns:
-		f64: Rounded Floating Value.
+		- The rounded floating-point number.
 	*/
-	return '${input_data:.3f}'.f64()
+    return '${input_data:.3f}'.f64() // Use string formatting to round the number to three decimal places
+}
+
+pub fn sqrt(number f64) f64 {
+	/*
+	sqrt calculates the square root of a floating-point number using the Newton-Raphson method.
+
+	Parameters:
+		- number: The number for which the square root is calculated.
+
+	Returns:
+		- The square root of the input number as a floating-point number.
+	*/
+
+    // Initialize variables for iterations
+    mut y := number
+    mut z := (y + (number / y)) / 2
+
+    // Initialize variable for absolute value
+    mut abs_value := 0.0
+
+    // Iterate until convergence (absolute difference less than 0.001)
+    for true {
+
+        // Calculate the absolute difference
+        if (y - z) > 0 {abs_value = (y - z)}
+		else {abs_value = (z - y)}
+
+        // Check for convergence
+        if abs_value < 0.001 {break}
+
+        // Update variables for the next iteration
+        y = z
+        z = (y + (number / y)) / 2
+    }
+
+    return round(z) // Round the result and return the square root
 }
