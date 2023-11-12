@@ -79,6 +79,7 @@ fn main() {
 
     // Print the trained model parameters
     println(model)
+    println('')
 
     // Prepare data for plotting
     mut plot_data := py_plot.PlotGraph {

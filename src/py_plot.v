@@ -62,5 +62,5 @@ pub fn plot_graph(mut plot_params PlotGraph) {
     mut cli_string := "python " + python_script_path + " --slope " + slope + " --intercept " + intercept + " --data " + data
 
 	// Execute the CLI Command to run the python Script
-	os.execute(cli_string)
+	println(os.execute(cli_string))
 }
