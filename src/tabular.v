@@ -155,6 +155,47 @@ pub fn (mut df DataFrame) fcovariance(column_name_a string, column_name_b string
     return record_a.fcovariance(mut record_b) // Call the fcovariance method on the first Series with the second Series as an argument
 }
 
+pub fn (mut df DataFrame) filter_features(feature_names []string) DataFrame {
+	/*
+	filter_features filters features in a DataFrame based on provided feature names.
+
+	Parameters:
+		- df: The DataFrame containing the original feature data.
+		- feature_names: A list of feature names to filter.
+
+	Returns:
+		- A new DataFrame containing only the specified features.
+
+	Example Usage:
+		df := DataFrame{ data: [Series.series([1.0, 2.0], 'feature1'), Series.series([3.0, 4.0], 'feature2')],
+						shape: [2, 2],
+						column_names: ['feature1', 'feature2'] }
+		filtered_df := df.filter_features(['feature1'])
+	*/
+
+    mut result := []Series{} // Initialize an empty list to store the filtered Series
+
+    // Iterate over each record in the original DataFrame
+    for record in df.data {
+
+		// Iterate over each feature to filter in the original DataFrame
+		for idx in 0..feature_names.len {
+
+        	// Check if the series_name matches any of the provided feature_names
+			if feature_names[idx] == record.series_name {
+				result << record // If there is a match, add the Series to the result list
+			}
+		}
+	}
+
+    // Create a new DataFrame using the filtered result
+    return DataFrame{
+        data: result
+        shape: [result[0].data.len, result.len]
+        column_names: feature_names
+    }
+}
+
 /* ############################################ Series Functions ######################################################## */
 
 pub fn Series.series(data []f64, series_name string) Series {

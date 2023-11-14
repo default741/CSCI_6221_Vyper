@@ -58,7 +58,7 @@ pub fn read_ml_data(file_path string) !(tabular.DataFrame, tabular.Series) {
 
 fn main() {
     // Path to the Excel file containing test data
-    file_path := './data/test_data.xlsx'
+    file_path := './data/test_data_mv.xlsx'
 
     // Configuration for linear regression model
     zero_weight_bias := false

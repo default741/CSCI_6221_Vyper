@@ -117,7 +117,8 @@ def plot_graph(data_dict: ML_Data) -> None:
     ))
 
     # Update layout with axis titles
-    fig.update_layout(xaxis_title='Feature_data', yaxis_title='Target Data')
+    fig.update_layout(xaxis_title='Feature_data',
+                      yaxis_title='Target Data', title='Regression Plot')
 
     # Show the plot
     fig.show()
