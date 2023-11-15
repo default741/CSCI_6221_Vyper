@@ -1,6 +1,6 @@
 module visualize_table
 
-pub fn find_max_length(data [][]string) []int {
+fn find_max_length(data [][]string) []int {
     /*
     Finds the maximum length of each column in the table.
 
@@ -40,7 +40,7 @@ pub fn find_max_length(data [][]string) []int {
 }
 
 
-pub fn print_table(max_list []int) {
+fn print_table(max_list []int) {
     /*
     Prints the border of a table.
 
@@ -66,7 +66,7 @@ pub fn print_table(max_list []int) {
     println('')
 }
 
-pub fn print_headers(data [][]string, max_list []int) {
+fn print_headers(data [][]string, max_list []int) {
     /*
     Prints the headers of a table.
 

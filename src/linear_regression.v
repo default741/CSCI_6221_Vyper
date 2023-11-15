@@ -97,49 +97,6 @@ fn (mut lr_model LinearRegression) init_coef(mut x tabular.DataFrame, mut y tabu
     return init_weights, init_bias // Return the initialized weights and bias
 }
 
-pub fn (mut lr_model LinearRegression) fit_model(mut x tabular.DataFrame, mut y tabular.Series) LinearRegression {
-	/*
-	fit_model fits the LinearRegression model to the provided dataset.
-
-	Parameters:
-		- x: A 2D array representing the features of the dataset.
-		- y: A 1D array representing the target values.
-
-	Returns:
-		- The fitted LinearRegression model.
-	*/
-
-    // Initialize weights and bias using init_coef method
-    mut init_weights, init_bias := lr_model.init_coef(mut x, mut y, lr_model.zero_weight_bias, lr_model.num_features)
-
-    // Set the model's weights and bias to the initialized values
-    lr_model.weights = init_weights
-    lr_model.bias = init_bias
-
-    // Initialize an array to store predicted values
-    mut y_pred := tabular.Series.series([], 'empty_series')
-
-    // Perform gradient descent for the specified number of iterations
-    for _ in 0..lr_model.iterations {
-        y_pred = lr_model.predict(mut x) // Predict target values using the current weights and bias
-        dw, db := lr_model.calculate_gradients(mut x, mut y, mut y_pred) // Calculate gradients for weights and bias
-
-        // Update weights using the learning rate and calculated gradients
-        for idx in 0..lr_model.num_features {
-            lr_model.weights.data[idx] = utils.round(lr_model.weights.data[idx] - (lr_model.learning_rate * dw.data[idx]))
-        }
-
-        // Update bias using the learning rate and calculated bias gradient
-        lr_model.bias = utils.round(lr_model.bias - (lr_model.learning_rate * db))
-    }
-
-    // Calculate and store the R² score for the model
-    lr_model.score(y_pred.data, y.data)
-
-    // Return the fitted LinearRegression model
-    return lr_model
-}
-
 pub fn (mut lr_model LinearRegression) predict(mut x tabular.DataFrame) tabular.Series {
 	/*
 	predict generates predictions using the LinearRegression model.
@@ -248,4 +205,47 @@ pub fn (mut lr_model LinearRegression) score(predicted_data []f64, actual_data [
 
     // Calculate R² and round the result
     lr_model.r_square = utils.round(1 - (utils.list_sum(rss) / utils.list_sum(tss)))
+}
+
+pub fn (mut lr_model LinearRegression) fit_model(mut x tabular.DataFrame, mut y tabular.Series) LinearRegression {
+	/*
+	fit_model fits the LinearRegression model to the provided dataset.
+
+	Parameters:
+		- x: A 2D array representing the features of the dataset.
+		- y: A 1D array representing the target values.
+
+	Returns:
+		- The fitted LinearRegression model.
+	*/
+
+    // Initialize weights and bias using init_coef method
+    mut init_weights, init_bias := lr_model.init_coef(mut x, mut y, lr_model.zero_weight_bias, lr_model.num_features)
+
+    // Set the model's weights and bias to the initialized values
+    lr_model.weights = init_weights
+    lr_model.bias = init_bias
+
+    // Initialize an array to store predicted values
+    mut y_pred := tabular.Series.series([], 'empty_series')
+
+    // Perform gradient descent for the specified number of iterations
+    for _ in 0..lr_model.iterations {
+        y_pred = lr_model.predict(mut x) // Predict target values using the current weights and bias
+        dw, db := lr_model.calculate_gradients(mut x, mut y, mut y_pred) // Calculate gradients for weights and bias
+
+        // Update weights using the learning rate and calculated gradients
+        for idx in 0..lr_model.num_features {
+            lr_model.weights.data[idx] = utils.round(lr_model.weights.data[idx] - (lr_model.learning_rate * dw.data[idx]))
+        }
+
+        // Update bias using the learning rate and calculated bias gradient
+        lr_model.bias = utils.round(lr_model.bias - (lr_model.learning_rate * db))
+    }
+
+    // Calculate and store the R² score for the model
+    lr_model.score(y_pred.data, y.data)
+
+    // Return the fitted LinearRegression model
+    return lr_model
 }

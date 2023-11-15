@@ -22,6 +22,9 @@ pub fn read_ml_data(file_path string) !(tabular.DataFrame, tabular.Series) {
     excel_data := read_xlsx_v.parse(file_path)! // Parse the Excel data using the read_xlsx_v module
     mut input_data := excel_data.clone() // Create a mutable copy of the parsed Excel data
 
+    println(input_data)
+    println('')
+
     // Visualize data in a tabular format
     visualize_table.display(excel_data, 0, 10)
 
@@ -68,11 +71,11 @@ fn main() {
     // Read machine learning data from the Excel file
     mut x, mut y := read_ml_data(file_path)!
 
-    // Get the number of records (samples)
-    num_of_records := x.shape[1]
+    // Get the number of features (samples)
+    num_of_features := x.shape[1]
 
     // Initialize a linear regression model
-    mut model := lr.LinearRegression.init_model(learning_rate, epochs, zero_weight_bias, num_of_records)
+    mut model := lr.LinearRegression.init_model(learning_rate, epochs, zero_weight_bias, num_of_features)
 
     // Fit the model using the input data
     model = model.fit_model(mut x, mut y)
